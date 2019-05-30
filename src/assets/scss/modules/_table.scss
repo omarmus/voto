@@ -1,0 +1,13 @@
+$tabla: #aaa;
+
+.table {
+  border-collapse: collapse;
+  border: 1px solid $tabla;
+  width: 100%;
+
+  td, th {
+    border-collapse: collapse;
+    border: 1px solid $tabla;
+    padding: 5px 10px;
+  }
+}

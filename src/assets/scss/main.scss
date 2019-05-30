@@ -1,0 +1,49 @@
+@import './_variables.scss';
+@import './vendor/normalize.scss';
+@import './modules/index.scss';
+
+body {
+  background-color: #ffffff;
+  font-family: 'Raleway', sans-serif;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0 0 15px;
+}
+
+h2 {
+  font-size: 1.8rem;
+  margin: 0 0 15px;
+  font-weight: 400;
+}
+
+h3 {
+  font-size: 1.6rem;
+  margin: 0 0 15px;
+}
+
+h4 {
+  font-size: 1.4rem;
+  margin: 0 0 15px;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
