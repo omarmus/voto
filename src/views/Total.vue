@@ -67,7 +67,7 @@ const colors = {
   'color-5': '#7ddcc9'
 }
 
-const url = 'https://omarmus.github.io/voto/'
+const url = 'https://omarmus.github.io/voto/#/'
 
 export default {
   mixins: [ encuesta ],
