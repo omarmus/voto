@@ -67,7 +67,7 @@ const colors = {
   'color-5': '#7ddcc9'
 }
 
-const url = 'http://localhost:8080'
+const url = 'https://omarmus.github.io/voto/'
 
 export default {
   mixins: [ encuesta ],
@@ -107,7 +107,6 @@ export default {
     }
   },
   mounted () {
-    console.log('process.APP_ROOT', process.env.APP_ROOT)
     this.key = this.$route.params.key
     this.render()
   },
