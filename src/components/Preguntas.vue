@@ -10,23 +10,33 @@
       <div class="alert alert-warning text-center" v-if="warning">
         {{ warning }}
       </div>
-      <template v-if="!success && !warning">
-        <h2 class="text-center">{{ encuesta.number }}. {{ encuesta.pregunta }}</h2>
-        <ul class="voto-preguntas">
-          <li v-for="(item, index) in encuesta.respuestas" :key="item.id">
-            <input type="radio" :id="'option-' + item.id" :value="item.id" v-model="respuesta" name="selector">
-            <label :for="'option-' + item.id"><strong>{{ item.number }}.</strong> {{ item.texto }}</label>
-            <div class="check"><div v-if="index" class="inside"></div></div>
-          </li>
-        </ul>
-        <div class="voto-actions" v-if="Object.keys(encuesta).length">
-          <button
-            type="button"
-            :disabled="send"
-            class="btn btn-success"
-            @click="enviar">Enviar</button>
-        </div>
-      </template>
+      <h2 class="voto-title">{{ encuesta.number }}{{ encuesta.number ? '.' : '' }} {{ encuesta.pregunta }}</h2>
+      <ul
+        class="voto-preguntas"
+        :class="{ disabled: !encuesta.active }">
+        <li v-for="(item, index) in encuesta.respuestas" :key="item.id">
+          <input
+            type="radio" :id="'option-' + item.id"
+            :value="item.id"
+            v-model="respuesta"
+            name="selector">
+          <label :for="'option-' + item.id"><strong>{{ item.number }}.</strong> {{ item.texto }}</label>
+          <div class="check"><div v-if="index" class="inside"></div></div>
+        </li>
+      </ul>
+      <div class="voto-actions" v-if="Object.keys(encuesta).length">
+        <button
+          v-if="encuesta.active"
+          type="button"
+          :disabled="send"
+          class="btn btn-primary"
+          @click="enviar">Votar</button>
+        <button
+          v-else
+          type="button"
+          class="btn btn-info"
+          @click="showTotal">Ver los resultados</button>
+      </div>
     </div>
   </div>
 </template>
@@ -45,34 +55,48 @@ export default {
       error: null,
       success: null,
       warning: null,
-      send: false
+      send: false,
+      test: false
     }
   },
   mounted () {
-    if (!localStorage.getItem('app-voto-success')) {
-      this.key = this.$route.params.key
+    this.key = this.$route.params.key
+    if (window.localStorage.getItem(`app-voto#${this.key}`)) {
+      this.showTotal()
+    } else {
       firebase.database().ref(`preguntas/${this.key}`)
-        .once('value', snapshot => {
+        .on('value', snapshot => {
           let data = snapshot.val()
           if (data) {
             if (data.active) {
-              this.encuesta = this.convertEncuesta(this.key, data)
+              this.success = 'La encuesta sigue abierta 😃'
+              this.error = null
             } else {
-              this.warning = 'La encuesta ya se cerró 🙁'
+              this.error = 'La encuesta ya se cerró 🙁'
+              this.success = null
             }
+            this.encuesta = this.convertEncuesta(this.key, data)
           } else {
             this.warning = 'No existe la encuesta 😅'
           }
         })
-    } else {
-      this.warning = 'Ya realizó su voto 🙂'
     }
   },
   methods: {
+    showTotal () {
+      this.$router.push(`/total/${this.key}`)
+    },
     enviar () {
+      if (localStorage.getItem(`app-voto#${this.key}`)) {
+        this.warning = '¡Usted ya realizó su voto previamente! 😠'
+        this.encuesta.active = false
+        return false
+      }
       if (!this.send) {
         if (this.respuesta) {
-          this.send = true
+          if (!this.test) {
+            this.send = true
+          }
           this.error = null
           const instance = firebase.database().ref(`preguntas/${this.key}/respuestas/${this.respuesta}`)
           instance.once('value', snapshot => {
@@ -80,8 +104,11 @@ export default {
             instance.update({
               total: parseInt(respuesta.total) + 1
             }, () => {
-              this.success = '¡Gracias por su voto! 😃'
-              localStorage.setItem('app-voto-success', true)
+              if (!this.test) {
+                this.success = '¡Gracias por su voto! 😃'
+                localStorage.setItem(`app-voto#${this.key}`, true)
+                this.showTotal()
+              }
             })
           })
         } else {
@@ -105,8 +132,13 @@ export default {
 
 $text: #777777;
 
+.voto-title {
+  margin-top: 30px;
+  text-align: center;
+}
+
 .voto {
-  padding-top: 50px;
+  padding-top: 20px;
 }
 
 .voto-actions {
@@ -119,7 +151,7 @@ $text: #777777;
     display: block;
     margin: 0 auto;
     line-height: 2rem;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 }
 
@@ -128,7 +160,21 @@ $text: #777777;
   margin: 30px auto;
   padding: 0;
   max-width: 600px;
+  position: relative;
   width: 100%;
+
+  &.disabled {
+    &::before {
+      content: '';
+      position: absolute;
+      background-color: rgba(255, 255, 255, .6);
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+    }
+  }
 
   li {
     color: $text;

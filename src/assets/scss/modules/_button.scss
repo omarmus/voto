@@ -18,6 +18,7 @@ button:-moz-focusring,
   line-height: 1rem;
   padding: 10px 15px;
   border-radius: 2px;
+  margin: 3px 2px;
   outline: 0;
   display: inline-flex;
   text-decoration: none;
@@ -55,6 +56,22 @@ button:-moz-focusring,
 
   &:hover {
     background-color: lighten($success, 5%);
+  }
+}
+.btn-info {
+  background-color: $info;
+  color: white;
+
+  &:hover {
+    background-color: lighten($info, 5%);
+  }
+}
+.btn-warning {
+  background-color: $warning;
+  color: white;
+
+  &:hover {
+    background-color: lighten($warning, 5%);
   }
 }
 

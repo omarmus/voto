@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import Total from './views/Total.vue'
+import Respuesta from './views/Respuesta.vue'
 
 Vue.use(Router)
 
@@ -15,7 +15,12 @@ export default new Router({
     {
       path: '/respuesta/:key',
       name: 'respuesta',
-      component: Total
+      component: Respuesta
+    },
+    {
+      path: '/total/:key',
+      name: 'total',
+      component: Respuesta
     }
   ]
 })
